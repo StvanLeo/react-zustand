@@ -1,21 +1,30 @@
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import apiCall from '../api';
+// import apiCall from '../api';
 import MealItem from "../components/MealItem";
+import useResultsStore from "../state/stores/results";
+import useUserInfoStore from "../state/stores/user-info";
 
 const Index: FC<{}> = () => {
-  const [searchText, setSearchText] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
+  const isLoading = useResultsStore((state) => state.isLoading);
+  const error = useResultsStore((state) => state.error);
+  const searchResults = useResultsStore((state) => state.searchResults);
 
-  console.log(searchResults);
+  const [searchText, setSearchText] = useState("");
+  // const [searchResults, setSearchResults] = useState([]);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState<any>(null);
+  const onSearchResults = useResultsStore((state) => state.onSearchResults);
+  const userInfo = useUserInfoStore((state) => state);
+  // const updateDeliveryInstructions = useUserInfoStore((state) => state.updateDeliveryInstructions);
+  const updateLastSearch = useUserInfoStore((state) => state.updateLastSearch);
 
   const navigate = useNavigate();
 
+  console.log(userInfo);
   const handleSearchClick = async () => {
-    try {
+    /* try {
       setIsLoading(true);
       const response = await apiCall(`/search.php?s=${searchText}`);
       setSearchResults(response?.meals);
@@ -23,7 +32,10 @@ const Index: FC<{}> = () => {
       setError(error);
     } finally {
       setIsLoading(false);
-    }
+    } */
+   onSearchResults(searchText);
+   // updateDeliveryInstructions("Test");
+   updateLastSearch(searchText);
   };
 
   const handleMealClick = (id: string) => {
@@ -39,7 +51,7 @@ const Index: FC<{}> = () => {
             type="text"
             placeholder="Search by name"
             className="text-lg p-1 border-2 rounded-sm	border-slate-500	w-96 h-full font-lato mt-2"
-            style={{color: '#000000'}}
+            style={{ color: '#000000' }}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
